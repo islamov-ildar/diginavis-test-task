@@ -1,5 +1,6 @@
 import firebase from "firebase/compat";
 import { ref, onUnmounted} from "vue";
+// import 'firebase/auth';
 
 const config = {
     apiKey: "AIzaSyBvTtN_GtOu5qWkv1ThA-szpj90HRqARKI",
@@ -14,31 +15,34 @@ const config = {
 const fireBaseApp = firebase.initializeApp(config)
 
 const db = fireBaseApp.firestore()
-const usersCollection = db.collection('users')
+const questionnairesCollection = db.collection('questionnaires')
 
-export const createUser = user => {
-    return usersCollection.add(user)
+export const createQuestionary = questionary => {
+    return questionnairesCollection.add(questionary)
 }
 
-export const getUser = async id => {
-    const user = await usersCollection.doc(id).get()
-    return user.exists ? user.data() : null
+export const getQuestionary = async id => {
+    const questionary = await questionnairesCollection.doc(id).get()
+    console.log(questionary)
+    return questionary.exists ? questionary.data() : null
 }
 
-export const updateUser = (id, user) => {
-    return usersCollection.doc(id).update(user)
+export const updateQuestionary = (id, questionary) => {
+    return questionnairesCollection.doc(id).update(questionary)
 }
 
-export const deleteUser = id => {
-    return usersCollection.doc(id).delete
+export const deleteQuestionary = id => {
+    return questionnairesCollection.doc(id).delete()
 }
 
-export const useLoadUsers = () => {
-    const users = ref([])
-    const close = usersCollection.onSnapshot(snapshot => users.value = snapshot.docs.map(doc => ({id: doc.id, ...doc.data() })))
+export const useLoadQuestionnaires = () => {
+    const questionnaires = ref([])
+    const close = questionnairesCollection.onSnapshot(snapshot => questionnaires.value = snapshot.docs.map(doc => ({id: doc.id, ...doc.data() })))
     onUnmounted(close)
-    return users
+    return questionnaires
 }
+
+
 
 // // Import the functions you need from the SDKs you need
 // import { initializeApp } from "firebase/app";

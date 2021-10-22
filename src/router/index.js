@@ -1,29 +1,32 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "../views/Home.vue";
-import About from "../views/About.vue";
-import Edit from "@/views/Edit.vue";
-import UserCreate from "@/components/UserCreate";
+// import Home from "../views/Home.vue";
+// import About from "../noRelevantFiles/views/About.vue";
+import EditQuestionary from "@/components/EditQuestionary.vue";
+import CreateQuestionary from "@/components/СreateQuestionary";
+import QuestionaryList from "@/components/QuestionaryList";
 const routes = [
   {
     path: "/",
-    name: "Home",
-    component: Home,
+    name: "questionaryList",
+    component: QuestionaryList,
   },
   {
-    path: "/about",
-    name: "About",
-    component: About,
+    path: "/createQuestionary",
+    name: "createQuestionary",
+    component: CreateQuestionary,
   },
   {
-    path: "/edit/:id",
-    name: "Edit",
-    component: Edit,
+    path: "/editQuestionary/:id",
+    name: "editQuestionary",
+    component: EditQuestionary,
   },
-  {
-    path: "/user_create",
-    name: "UserCreate",
-    component: UserCreate,
-  },
+
+  // {
+  //   path: "/about",
+  //   name: "About",
+  //   component: About,
+  // },
+
 ];
 
 const router = createRouter({

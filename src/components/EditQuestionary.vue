@@ -1,21 +1,27 @@
 <template>
 	<div class="card card-body mt-4">
-		<h1>Page for Edit User</h1>
-		<form @submite.prevent="update">
+		<h1>Ректирование анкеты поставщика</h1>
+		<form @submit.prevent="update">
 
 			<div class="form-group">
-				<label>Name</label>
+				<label>Название анкеты</label>
 				<input v-model="form.name" class="form-control" required />
 			</div>
 
 			<div class="form-group mt-3">
-				<label>Email</label>
+				<label>Email поставщика</label>
 				<input v-model="form.email" class="form-control" type="email" required />
 			</div>
 
 			<button type="submit" class="btn btn-primary mt-3">
-				Update
+				Сохранить анкету
 			</button>
+			<router-link to="/">
+				<button class="btn btn-secondary mt-3">
+				Отмена
+				</button>
+			</router-link>
+
 
 		</form>
 	</div>
@@ -24,26 +30,27 @@
 <script>
 import { reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getUser, updateUser} from "@/firebase"
+import { getQuestionary, updateQuestionary} from "@/firebase"
 
 export default {
-	name: "Edit",
+	name: "EditQuestionary",
 	setup() {
 		const router = useRouter()
 		const route = useRoute()
-		const userId = computed(() => route.params.id)
+		const questionaryId = computed(() => route.params.id)
 
 		const form = reactive({name: '', email: ''})
 
 		onMounted(async () => {
-			const user = await getUser(userId.value)
-			form.name = user.name
-			form.email = user.email
+			const questionary = await getQuestionary(questionaryId.value)
+			form.name = questionary.name
+			form.email = questionary.email
 		})
 
 		const update = async () => {
-			await updateUser(userId.value, {...form})
-			router.push('/user_create')
+			console.log(questionaryId.value);
+			await updateQuestionary(questionaryId.value, {...form})
+			await router.push('/')
 			form.name = ''
 			form.email = ''
 		}

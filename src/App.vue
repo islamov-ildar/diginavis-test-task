@@ -1,10 +1,9 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link> |
-    <router-link to="/edit">Edit</router-link> |
-    <router-link to="/user_create">UserCreate</router-link>
-  </div>
+<!--  <div id="nav">-->
+<!--    <router-link to="/">Home</router-link> |-->
+<!--    <router-link to="/about">About</router-link> |-->
+<!--    <router-link to="/user_create">UserCreate</router-link>-->
+<!--  </div>-->
   <router-view />
 </template>
 
