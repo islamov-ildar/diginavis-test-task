@@ -1,62 +1,51 @@
 <template>
-	<div class="card card-body mt-4">
-		<h1>Ректирование анкеты поставщика</h1>
-		<form @submit.prevent="update">
-
-			<div class="form-group">
-				<label>Название анкеты</label>
-				<input v-model="form.name" class="form-control" required />
+	<div class="">
+		<div class="top-toolbar edit-toolbar">
+			<div class="top-toolbar-left">
+				<router-link to="/">
+					<Button icon="pi pi-arrow-left" class="p-button-rounded p-button-text" />
+				</router-link>
+				<div class="new-questionary-title">
+					Редактирование анкеты
+				</div>
 			</div>
-
-			<div class="form-group mt-3">
-				<label>Email поставщика</label>
-				<input v-model="form.email" class="form-control" type="email" required />
+			<div class="top-toolbar-right">
+				<Button label="Сохранить" id="save-btn" @click="update"/>
+				<Button icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text" />
 			</div>
-
-			<button type="submit" class="btn btn-primary mt-3">
-				Сохранить анкету
-			</button>
-			<router-link to="/">
-				<button class="btn btn-secondary mt-3">
-				Отмена
-				</button>
-			</router-link>
-
-
-		</form>
+		</div>
+	<CreateQuestionary v-if="questionary" :questionary="questionary"/>
 	</div>
+
 </template>
 
 <script>
-import { reactive, computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getQuestionary, updateQuestionary} from "@/firebase"
+import CreateQuestionary from '../components/СreateQuestionary.vue'
 
 export default {
 	name: "EditQuestionary",
+	components: {CreateQuestionary},
 	setup() {
 		const router = useRouter()
 		const route = useRoute()
 		const questionaryId = computed(() => route.params.id)
 
-		const form = reactive({name: '', email: ''})
-
+		const questionary = ref()
 		onMounted(async () => {
-			const questionary = await getQuestionary(questionaryId.value)
-			form.name = questionary.name
-			form.email = questionary.email
+			questionary.value = await getQuestionary(questionaryId.value)
 		})
 
 		const update = async () => {
 			console.log(questionaryId.value);
-			await updateQuestionary(questionaryId.value, {...form})
+			await updateQuestionary(questionaryId.value, {...questionary.value})
 			await router.push('/')
-			form.name = ''
-			form.email = ''
 		}
 
 		return {
-			form,
+			questionary,
 			update
 		}
 	}
@@ -65,5 +54,18 @@ export default {
 </script>
 
 <style scoped>
+.top-toolbar-left {
+	display: flex;
+	align-items: center;
+}
+.new-questionary-title {
+	font-weight: bold;
+	font-size: 20px;
+	margin-left: 25px;
+}
+.edit-toolbar {
+	padding: 10px 60px 0 60px;
+	margin: 10px 40px 0 40px;
+}
 
 </style>
