@@ -23,7 +23,7 @@
 			<Checkbox id="isSampleFieldCheckbox" v-model="defaultObj.isBlocked" :binary="true" />
 			<label for="isSampleFieldCheckbox"> Создать стандартный шаблон из этой анкеты</label>
 		</div>
-		<div class="card section" v-for="oneSection of defaultObj.sections" :key="oneSection.sectionId">
+		<div @drop="onDrop($event, oneSection.sectionId)" @dragover.prevent @dragenter.prevent class="card section" v-for="oneSection of defaultObj.sections" :key="oneSection.sectionId" >
 			<div class="oneField">
 			<div class="card-left">
 				<div class="card-header">
@@ -36,9 +36,10 @@
 			</div>
 			</div>
 
-			<div class="oneField" v-for="oneField of oneSection.fields" :key="oneField.code">
+			<div @dragstart="onDragStart($event, oneField)" draggable="true" class="oneField" v-for="oneField of oneSection.fields" :key="oneField.code">
 				<div class="card-left">
-					<i class="pi pi-info-circle"></i><InputText v-model="oneField.name" class="oneField-input" placeholder="Название поля" @focus="inFocus(oneSection.sectionId, oneField)"/>
+					<i class="pi pi-info-circle"></i>
+					<InputText v-model="oneField.name" class="oneField-input" placeholder="Название поля" @focus="inFocus(oneSection.sectionId, oneField)"/>
 				</div>
 				<div class="card-right">
 					<Button v-if="oneField.required" icon="pi pi-circle-off" class="p-button-rounded p-button-text p-button-danger card-right-ico" />
@@ -208,7 +209,8 @@ export default {
 			code: '',
 			description: '',
 			required: true,
-			id: ''
+			id: '',
+			idOfParentSection: null
 		})
 
 		function setNewFieldToDefault() {
@@ -231,7 +233,7 @@ export default {
 		function addFieldToSection() {
 			let tempObj = {...newField.value}
 			if (tempObj.id) {
-				console.log('123')
+				tempObj.idOfParentSection = sectionIdForPasteNewField.value;
 				for (let oneSectionIdx in defaultObj.sections) {
 					if (defaultObj.sections[oneSectionIdx].sectionId === sectionIdForPasteNewField.value) {
 						defaultObj.sections[oneSectionIdx].fields[defaultObj.sections[oneSectionIdx].fields.findIndex(i => i.id === oneFieldForEditId.value)] = tempObj
@@ -239,6 +241,7 @@ export default {
 				}
 			} else {
 				tempObj.id = createId()
+				tempObj.idOfParentSection = sectionIdForPasteNewField.value;
 				for (let oneSectionIdx in defaultObj.sections) {
 					if (defaultObj.sections[oneSectionIdx].sectionId === sectionIdForPasteNewField.value) {
 						defaultObj.sections[oneSectionIdx].fields.push(tempObj)
@@ -246,6 +249,7 @@ export default {
 				}
 			}
 			setNewFieldToDefault()
+			console.log(defaultObj.sections)
 		}
 
 		const defaultSection = reactive(
@@ -286,6 +290,7 @@ export default {
 		}
 
 		let oneFieldForEditId = ref(null)
+
 		function inFocus(sectionId, oneField) {
 			console.log('Focused!')
 			oneFieldForEditId.value = oneField.id
@@ -304,7 +309,37 @@ export default {
 			console.log(defaultObj.sections);
 		}
 
+		function onDragStart(e, item) {
+			console.log(e, item)
+			e.dataTransfer.dropEffect = 'move'
+			e.dataTransfer.effectAllowed = 'move'
+			e.dataTransfer.setData('itemId', item.id.toString())
+		}
+
+		function onDrop(e, newSectionId) {
+			const itemId = parseInt(e.dataTransfer.getData('itemId'))
+			let oldSectionId = null
+			for(let oneSection in defaultObj.sections) {
+				if(defaultObj.sections[oneSection].sectionId === newSectionId) {
+					for(let oneSectionSecondCycle in defaultObj.sections) {
+						for(let oneFiled in defaultObj.sections[oneSectionSecondCycle].fields) {
+							if(defaultObj.sections[oneSectionSecondCycle].fields[oneFiled].id === itemId) {
+								oldSectionId = defaultObj.sections[oneSectionSecondCycle].fields[oneFiled].idOfParentSection
+								let tempObj = {...defaultObj.sections[oneSectionSecondCycle].fields[oneFiled]}
+								tempObj.idOfParentSection = newSectionId
+								tempObj.id = createId()
+								defaultObj.sections[oneSection].fields.push(tempObj)
+							}
+						}
+					}
+				}
+			}
+			deleteField(oldSectionId, itemId)
+		}
+
 		return {
+			onDrop,
+			onDragStart,
 			copySection,
 			setNewFieldToDefault,
 			inFocus,
