@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-// import Home from "../views/Home.vue";
-// import About from "../noRelevantFiles/views/About.vue";
 import EditQuestionary from "@/components/EditQuestionary.vue";
 import CreateQuestionary from "@/components/СreateQuestionary";
 import QuestionaryList from "@/components/QuestionaryList";

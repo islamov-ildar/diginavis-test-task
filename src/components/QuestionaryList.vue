@@ -27,7 +27,6 @@
 					<Button v-if="!oneQuestionary.isBlocked" icon="pi pi-pencil" class="p-button-rounded p-button-warning p-button-text card-right-ico" />
 				</router-link>
 				<Button v-if="!oneQuestionary.isBlocked" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text card-right-ico" @click="deleteQuestionary(oneQuestionary.id)"/>
-<!--				<Button v-if="!oneQuestionary.isBlocked" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text card-right-ico" @click="deleteQuestionary(oneQuestionary.id)"/>-->
 			</div>
 		</div>
 	</div>
@@ -39,26 +38,13 @@
 <script>
 import {createQuestionary, useLoadQuestionnaires} from "@/firebase";
 import {deleteQuestionary} from "@/firebase";
-import {getDataFromFireBase} from "@/firebase";
-import { ref } from 'vue'
 import Header from "@/components/partials/Header";
 import LeftBarAndWrapper from "@/components/partials/LeftBarAndWrapper";
-
-// import firebase from "firebase/compat";
 
 export default {
 	components: {Header, LeftBarAndWrapper},
 	setup() {
 		let questionnaires = useLoadQuestionnaires()
-		let questionnaires1 = ref([])
-		function getData() {
-			getDataFromFireBase().then((res) => {
-				const documents = res.docs.map(doc => ({id: doc.id, ...doc.data()}))
-				documents.reverse()
-				questionnaires1.value = [...documents]
-			})
-		}
-		getData()
 
 		function copyQuestionary(questionary) {
 			let tempQuestionary = {...questionary}
@@ -66,10 +52,8 @@ export default {
 			tempQuestionary.isBlocked = false
 			tempQuestionary.questionaryName = `${tempQuestionary.questionaryName} - копия`
 			createQuestionary({...tempQuestionary})
-			console.log(tempQuestionary)
 		}
 		return {
-			getData,
 			questionnaires,
 			deleteQuestionary,
 			copyQuestionary

@@ -31,7 +31,6 @@
 
 <script>
 import {reactive} from "vue";
-// import * as firebase from "firebase/compat";
 import firebase from "firebase/compat";
 import 'firebase/auth';
 import {useRouter} from "vue-router";

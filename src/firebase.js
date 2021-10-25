@@ -1,6 +1,5 @@
 import firebase from "firebase/compat";
 import { ref, onUnmounted} from "vue";
-// import 'firebase/auth';
 
 const config = {
     apiKey: "AIzaSyBvTtN_GtOu5qWkv1ThA-szpj90HRqARKI",
@@ -41,16 +40,3 @@ export const useLoadQuestionnaires = () => {
     onUnmounted(close)
     return questionnaires
 }
-
-export const getDataFromFireBase = () => {
-    return db.collection('questionnaires').orderBy('isBlocked')
-        .get()
-        .then(querySnapshot => {
-            return querySnapshot
-        })
-}
-
-// 			a.sort(function (a, b) {
-// 				// console.log(Boolean(a.isBlocked), Boolean(b.isBlocked))
-// 				return Boolean(b.isBlocked) - Boolean(a.isBlocked)
-// 			});

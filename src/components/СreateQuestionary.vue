@@ -133,71 +133,6 @@ export default {
 		if(props.questionary) {
 			defaultObj = reactive(props.questionary)
 		}
-		const testObjForField = reactive(
-			{
-				questionaryName: 'Название анкеты',
-				sections: [
-					{ sectionName: 'Данные компании',
-						sectionId: 1,
-						fields: [
-							{
-								name:'ИНН',
-								required: true,
-								type: 'text',
-								code: 'ASD'
-							},
-							{
-								name:'Юридическое название',
-								required: true,
-								type: 'text',
-								code: 'ASD1'
-							},
-							{
-								name:'Юридический адрес',
-								required: false,
-								type: 'text',
-								code: 'ASD2'
-							},
-						]
-					},
-					{ sectionName: 'Документы',
-						sectionId: 2,
-						fields: [
-							{
-								name:'ИНН-2',
-								required: true,
-								type: 'text',
-								code: 'ASD'
-							},
-							{
-								name:'Юридическое название-2',
-								required: true,
-								type: 'text',
-								code: 'ASD1'
-							},
-							{
-								name:'Юридический адрес-2',
-								required: false,
-								type: 'text',
-								code: 'ASD2'
-							},
-						]
-					},
-					{ sectionName: '',
-						sectionId: 3,
-						fields: [
-							{
-								name:'',
-								required: true,
-								type: 'text',
-								code: 'ASD4'
-							},
-						]
-					},
-				]
-
-			}
-		)
 
 		const sectionIdForPasteNewField = ref(null)
 
@@ -363,7 +298,6 @@ export default {
 			openModal,
 			closeModal,
 			displayModal,
-			testObjForField,
 			form,
 			onSubmit
 		}
