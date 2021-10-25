@@ -1,5 +1,5 @@
 <template>
-	<div class="">
+	<div class="container" id="editorContainer">
 		<div class="top-toolbar edit-toolbar">
 			<div class="top-toolbar-left">
 				<router-link to="/">
@@ -34,6 +34,7 @@ export default {
 		const questionaryId = computed(() => route.params.id)
 
 		const questionary = ref()
+
 		onMounted(async () => {
 			questionary.value = await getQuestionary(questionaryId.value)
 		})
@@ -66,6 +67,9 @@ export default {
 .edit-toolbar {
 	padding: 10px 60px 0 60px;
 	margin: 10px 40px 0 40px;
+}
+#editorContainer {
+	padding: 0;
 }
 
 </style>

@@ -9,83 +9,71 @@
 			<Button label="Новая анкета" icon="pi pi-plus-circle" />
 		</router-link>
 	</div>
-	<div class="card-wrapper">
-		<div class="card">
-			<div class="card-left">
-				<div class="card-header">Анкета для тендера по металлопрокат</div>
-				<div class="card-description">11.04.2020</div>
-			</div>
-			<div class="card-right">
-				<Button icon="pi pi-copy" class="p-button-rounded p-button-text card-right-ico" />
-				<Button icon="pi pi-pencil" class="p-button-rounded p-button-warning p-button-text card-right-ico" />
-				<Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text card-right-ico" />
-			</div>
-		</div>
-	</div>
 
-	<div class="card-wrapper">
-		<div class="card" v-for="{id, dateOfCreate, questionaryName} in questionnaires" :key="id">
+	<div class="card-wrapper" v-if="questionnaires">
+		<div class="card" v-for="oneQuestionary in questionnaires" :key="oneQuestionary.id"
+		:class="{sampleCardBackGround: oneQuestionary.isBlocked}">
 			<div class="card-left">
-				<div class="card-header"> {{ questionaryName }} </div>
-				<div class="card-description"> {{ dateOfCreate }} </div>
+				<div class="card-header"> {{ oneQuestionary.questionaryName }} </div>
+				<div v-if="!oneQuestionary.isBlocked" class="card-description"> {{ oneQuestionary.dateOfCreate }} </div>
+				<div v-if="oneQuestionary.isBlocked" class="card-description"> {{ oneQuestionary.isSampleText }} </div>
 			</div>
 			<div class="card-right">
-				<Button icon="pi pi-copy" class="p-button-rounded p-button-text card-right-ico" />
-				<router-link :to="`/editQuestionary/${id}`">
-					<Button icon="pi pi-pencil" class="p-button-rounded p-button-warning p-button-text card-right-ico" />
+				<Button icon="pi pi-copy" class="p-button-rounded p-button-text card-right-ico" @click="copyQuestionary(oneQuestionary)"/>
+				<router-link :to="`/editQuestionary/${oneQuestionary.id}`">
+					<Button v-if="!oneQuestionary.isBlocked" icon="pi pi-pencil" class="p-button-rounded p-button-warning p-button-text card-right-ico" />
 				</router-link>
-				<Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text card-right-ico" @click="deleteQuestionary(id)"/>
+				<Button v-if="!oneQuestionary.isBlocked" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text card-right-ico" @click="deleteQuestionary(oneQuestionary.id)"/>
 			</div>
 		</div>
 	</div>
 	<router-view />
 	</div>
 
-<!--	<div class="card mt-4">-->
-<!--		<table class="table m-0">-->
-<!--			<thead>-->
-<!--			<tr>-->
-<!--				<th scope="col">Name</th>-->
-<!--				<th scope="col">Email</th>-->
-<!--				<th scope="col">Action</th>-->
-<!--			</tr>-->
-<!--			</thead>-->
-<!--			<tbody>-->
-<!--			<tr v-for="{id, name, email} in questionnaires" :key="id">-->
-<!--				<td>{{ name }}</td>-->
-<!--				<td>{{ email }}</td>-->
-<!--				<td>-->
-<!--					<router-link :to="`/editQuestionary/${id}`">-->
-<!--						<button class="btn btn-primary btn-sm me-2">-->
-<!--							Edit-->
-<!--						</button>-->
-<!--					</router-link>-->
-<!--					<button class="btn btn-danger btn-sm" @click="deleteQuestionary(id)">-->
-<!--						Delete-->
-<!--					</button>-->
-<!--				</td>-->
-<!--			</tr>-->
-<!--			</tbody>-->
-<!--		</table>-->
-<!--	</div>-->
 </template>
 
 <script>
-import { useLoadQuestionnaires } from "@/firebase";
+import {createQuestionary, useLoadQuestionnaires} from "@/firebase";
 import {deleteQuestionary} from "@/firebase";
+import {getDataFromFireBase} from "@/firebase";
+import { ref } from 'vue'
+// import firebase from "firebase/compat";
+
+
 export default {
 	setup() {
-		const questionnaires = useLoadQuestionnaires()
+		let questionnaires = useLoadQuestionnaires()
+		let questionnaires1 = ref([])
+		function getData() {
+			getDataFromFireBase().then((res) => {
+				const documents = res.docs.map(doc => ({id: doc.id, ...doc.data()}))
+				documents.reverse()
+				questionnaires1.value = [...documents]
+			})
+		}
+		getData()
 
+		function copyQuestionary(questionary) {
+			let tempQuestionary = {...questionary}
+			delete tempQuestionary.id
+			tempQuestionary.isBlocked = false
+			tempQuestionary.questionaryName = `${tempQuestionary.questionaryName} - копия`
+			createQuestionary({...tempQuestionary})
+			console.log(tempQuestionary)
+		}
 		return {
+			getData,
 			questionnaires,
-			deleteQuestionary
+			deleteQuestionary,
+			copyQuestionary
 		}
 	}
 }
 </script>
 
 <style scoped>
-
+.sampleCardBackGround {
+	background: rgba(104, 125, 141, 0.1);
+}
 
 </style>

@@ -19,7 +19,10 @@
 		<div class="card" id="new-questionary-name">
 			<InputText type="text" placeholder="Название анкеты" v-model="defaultObj.questionaryName" />
 		</div>
-
+		<div v-if="false" class="checkbox-wrapper">
+			<Checkbox id="isSampleFieldCheckbox" v-model="defaultObj.isBlocked" :binary="true" />
+			<label for="isSampleFieldCheckbox"> Создать стандартный шаблон из этой анкеты</label>
+		</div>
 		<div class="card section" v-for="oneSection of defaultObj.sections" :key="oneSection.sectionId">
 			<div class="oneField">
 			<div class="card-left">
@@ -28,7 +31,7 @@
 				</div>
 			</div>
 			<div class="card-right">
-				<Button icon="pi pi-copy" class="p-button-rounded p-button-text card-right-ico" />
+				<Button icon="pi pi-copy" class="p-button-rounded p-button-text card-right-ico" @click="copySection(oneSection)"/>
 				<Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text card-right-ico" @click="deleteSection(oneSection.sectionId)"/>
 			</div>
 			</div>
@@ -38,13 +41,13 @@
 					<i class="pi pi-info-circle"></i><InputText v-model="oneField.name" class="oneField-input" placeholder="Название поля" @focus="inFocus(oneSection.sectionId, oneField)"/>
 				</div>
 				<div class="card-right">
-<!--					<Button v-if="oneField.required" icon="pi pi-circle-off" class="p-button-rounded p-button-text p-button-danger card-right-ico" />-->
-<!--					<Button v-else icon="pi pi-circle-off" class="p-button-rounded p-button-text card-right-ico" />-->
+					<Button v-if="oneField.required" icon="pi pi-circle-off" class="p-button-rounded p-button-text p-button-danger card-right-ico" />
+					<Button v-else icon="pi pi-circle-off" class="p-button-rounded p-button-text card-right-ico" />
 					<Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text card-right-ico" @click="deleteField(oneSection.sectionId, oneField.id)"/>
 				</div>
 			</div>
 			<div class="card-section-bottom">
-			<Button label="Добавить поле" icon="pi pi-plus-circle" @click="openModal(oneSection.sectionId)"/>
+			<Button label="Добавить поле" icon="pi pi-plus-circle" @click="openModal(oneSection.sectionId); setNewFieldToDefault()"/>
 			</div>
 		</div>
 
@@ -56,7 +59,7 @@
 	</div>
 	</div>
 
-	<Dialog header="Создание нового поля" v-model:visible="displayModal" :style="{width: '55vw'}" :modal="true">
+	<Dialog header="Редактирование поля" v-model:visible="displayModal" :style="{width: '55vw'}" :modal="true">
 		<div class="modal-inputs-wrapper">
 		<span class="p-float-label modal-input">
             <InputText id="newFieldName" type="text" v-model="newField.name" class="modal-inputs-wide" />
@@ -74,9 +77,13 @@
             <label for="newFieldDescription">Описание</label>
 		</span>
 		</div>
+		<div class="checkbox-wrapper">
+			<Checkbox id="requiredFieldCheckbox" v-model="newField.required" :binary="true" />
+			<label for="requiredFieldCheckbox"> Обязательно поле</label>
+		</div>
 		<template #footer>
 			<Button label="Отменить" icon="pi pi-times" @click="closeModal" class="p-button-text"/>
-			<Button label="Сохранить и применить" icon="pi pi-check" @click="closeModal(); addNewFieldToSection()" autofocus />
+			<Button label="Сохранить и применить" icon="pi pi-check" @click="closeModal(); addFieldToSection()" autofocus />
 		</template>
 	</Dialog>
 </template>
@@ -109,7 +116,9 @@ export default {
 		let defaultObj = reactive({
 			questionaryName: '',
 			dateOfCreate: new Date().toLocaleDateString(),
-			sections: []
+			sections: [],
+			isBlocked: false,
+			isSampleText: 'Стандартный шаблон'
 		})
 
 		if(props.questionary) {
@@ -193,19 +202,20 @@ export default {
 			displayModal.value = false;
 		}
 
-		let newField = reactive({
+		let newField = ref({
 			name: '',
 			typeOfData: '',
 			code: '',
 			description: '',
 			required: true,
-			id: null
+			id: ''
 		})
 
 		function setNewFieldToDefault() {
-			for(let oneProps in newField) {
-				newField[oneProps] = '';
+			for(let oneProps in newField.value) {
+				newField.value[oneProps] = '';
 			}
+			newField.value.required = true
 		}
 
 		const typeOfData = ref([
@@ -218,12 +228,21 @@ export default {
 			return Date.now()
 		}
 
-		function addNewFieldToSection() {
-			let tempObj = {...newField}
-			tempObj.id = createId()
-			for(let oneSectionIdx in defaultObj.sections) {
-				if(defaultObj.sections[oneSectionIdx].sectionId === sectionIdForPasteNewField.value) {
-					defaultObj.sections[oneSectionIdx].fields.push(tempObj)
+		function addFieldToSection() {
+			let tempObj = {...newField.value}
+			if (tempObj.id) {
+				console.log('123')
+				for (let oneSectionIdx in defaultObj.sections) {
+					if (defaultObj.sections[oneSectionIdx].sectionId === sectionIdForPasteNewField.value) {
+						defaultObj.sections[oneSectionIdx].fields[defaultObj.sections[oneSectionIdx].fields.findIndex(i => i.id === oneFieldForEditId.value)] = tempObj
+					}
+				}
+			} else {
+				tempObj.id = createId()
+				for (let oneSectionIdx in defaultObj.sections) {
+					if (defaultObj.sections[oneSectionIdx].sectionId === sectionIdForPasteNewField.value) {
+						defaultObj.sections[oneSectionIdx].fields.push(tempObj)
+					}
 				}
 			}
 			setNewFieldToDefault()
@@ -266,21 +285,35 @@ export default {
 			}
 		}
 
+		let oneFieldForEditId = ref(null)
 		function inFocus(sectionId, oneField) {
 			console.log('Focused!')
+			oneFieldForEditId.value = oneField.id
 			openModal(sectionId);
-			newField = reactive({...oneField})
-			console.log(newField);
+			newField.value = {...oneField}
+			console.log(newField.value);
+		}
+
+		function copySection(oneSection) {
+			let tempSection = JSON.parse(JSON.stringify(oneSection))
+			console.log(tempSection.sectionId)
+			tempSection.sectionName = `${tempSection.sectionName} - копия`
+			tempSection.sectionId = createId()
+			console.log(tempSection.sectionId)
+			defaultObj.sections.push(tempSection)
+			console.log(defaultObj.sections);
 		}
 
 		return {
+			copySection,
+			setNewFieldToDefault,
 			inFocus,
 			deleteSection,
 			deleteField,
 			createId,
 			showObj,
 			addNewSection,
-			addNewFieldToSection,
+			addFieldToSection,
 			defaultObj,
 			typeOfData,
 			newField,
@@ -296,10 +329,14 @@ export default {
 </script>
 
 <style scoped>
-/*.add-new-section {*/
-/*	display: flex;*/
-/*	justify-content: center;*/
-/*}*/
+.checkbox-wrapper label {
+	margin-left: 5px;
+}
+.checkbox-wrapper {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
 .modal-inputs-center {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
