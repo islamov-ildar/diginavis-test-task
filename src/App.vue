@@ -1,54 +1,14 @@
 <template>
-	<header>
-		<div class="header-left">
-			<img src="./assets/reka_logo.svg" alt="logo">
-		</div>
-		<div class="header-right">
-			<div class="lang-ico">
-				<img src="./assets/icons/lang.svg" alt="lang">
-				<i class="pi pi-globe"></i>
-			</div>
-			<i class="pi pi-bell"></i>
-			<i class="pi pi-user"></i>
-		</div>
-	</header>
-	<div class="main-wrapper">
-	<div class="left-bar">
-		<div class="left-bar-top">
-			<div class="oneMenuItem">
-				<img src="./assets/icons/tenders.svg" alt="tenders">
-				<span>Тендеры</span>
-			</div>
-			<div class="oneMenuItem">
-				<img src="./assets/icons/contragents.svg" alt="contragents">
-				<span>Контрагенты</span>
-			</div>
-			<div class="oneMenuItem">
-				<img src="./assets/icons/users.svg" alt="users">
-				<span>Пользователи</span>
-			</div>
-			<div class="oneMenuItem" id="currentMenuItem">
-				<img src="./assets/icons/questionaries.svg" alt="questionaries">
-				<span>Анкеты</span>
-			</div>
-		</div>
-		<div class="left-bar-bottom">
-			<div class="oneMenuItem">
-				<img src="./assets/icons/help.svg" alt="help">
-				<span>помощь</span>
-			</div>
-			<div class="oneMenuItem">
-				<img src="./assets/icons/settings.svg" alt="settings">
-				<span>Настройки</span>
-			</div>
-		</div>
-	</div>
-  <router-view />
-	</div>
+
+	<router-view />
 </template>
 
 <script>
 //test-task-19102021 - name of project in Firebase
+//user@user.com
+//123456
+
+
 </script>
 
 <style>
@@ -106,16 +66,21 @@ a {
 }
 
 .header-right {
-	display: grid;
-	grid-template-columns: 2fr 1fr 1fr;
-	grid-gap: 40px;
+	display: flex;
+	align-items: center;
+}
+.header-right > .pi {
+	padding-left: 16px;
+}
+.header-right button {
+	margin-left: 16px;
 }
 .lang-ico {
 	display: flex;
 	align-items: center;
 }
 .lang-ico img {
-	margin-right: 14px;
+	margin-right: 8px;
 }
 .left-bar span {
 	text-transform: uppercase;

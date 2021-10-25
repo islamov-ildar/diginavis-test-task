@@ -1,4 +1,7 @@
 <template>
+	<Header />
+	<div class="main-wrapper">
+	<LeftBarAndWrapper />
 	<div class="container">
 	<div class="top-toolbar">
 		<span class="p-input-icon-left">
@@ -24,12 +27,13 @@
 					<Button v-if="!oneQuestionary.isBlocked" icon="pi pi-pencil" class="p-button-rounded p-button-warning p-button-text card-right-ico" />
 				</router-link>
 				<Button v-if="!oneQuestionary.isBlocked" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text card-right-ico" @click="deleteQuestionary(oneQuestionary.id)"/>
+<!--				<Button v-if="!oneQuestionary.isBlocked" icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-text card-right-ico" @click="deleteQuestionary(oneQuestionary.id)"/>-->
 			</div>
 		</div>
 	</div>
 	<router-view />
 	</div>
-
+	</div>
 </template>
 
 <script>
@@ -37,10 +41,13 @@ import {createQuestionary, useLoadQuestionnaires} from "@/firebase";
 import {deleteQuestionary} from "@/firebase";
 import {getDataFromFireBase} from "@/firebase";
 import { ref } from 'vue'
+import Header from "@/components/partials/Header";
+import LeftBarAndWrapper from "@/components/partials/LeftBarAndWrapper";
+
 // import firebase from "firebase/compat";
 
-
 export default {
+	components: {Header, LeftBarAndWrapper},
 	setup() {
 		let questionnaires = useLoadQuestionnaires()
 		let questionnaires1 = ref([])

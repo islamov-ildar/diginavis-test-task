@@ -1,8 +1,11 @@
 <template>
+	<Header v-if="!questionary"/>
+	<div class="main-wrapper">
+	<LeftBarAndWrapper v-if="!questionary"/>
 	<div class="container">
 	<div v-if="!questionary" class="top-toolbar">
 		<div class="top-toolbar-left">
-			<router-link to="/">
+			<router-link to="/questionaryList">
 				<Button icon="pi pi-arrow-left" class="p-button-rounded p-button-text" />
 			</router-link>
 			<div class="new-questionary-title">
@@ -87,16 +90,21 @@
 			<Button label="Сохранить и применить" icon="pi pi-check" @click="closeModal(); addFieldToSection()" autofocus />
 		</template>
 	</Dialog>
+	</div>
 </template>
 
 <script>
 import { createQuestionary } from "@/firebase";
 import { ref, reactive } from "vue";
 import { useRouter } from 'vue-router'
+import Header from "@/components/partials/Header";
+import LeftBarAndWrapper from "@/components/partials/LeftBarAndWrapper";
 
 
 export default {
 	name: "СreateQuestionary",
+	components: {Header, LeftBarAndWrapper},
+
 	props: {
 		questionary: {
 			type: Object,
@@ -109,7 +117,7 @@ export default {
 
 		const onSubmit = async () => {
 			await createQuestionary({...defaultObj})
-			await router.push('/')
+			await router.push('/questionaryList')
 			form.name = ''
 			form.email = ''
 		}
